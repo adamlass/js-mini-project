@@ -14,7 +14,11 @@ function positionCreator(lon, lat, userId, dateInFuture) {
 }
 
 
-async function makeData() {
+async function makeData(test) {
+  if(test === true){
+    connect(require("./settings").TEST_DB_URI);
+  }
+
   console.log("Making users")
   try {
     var userInfos = [
@@ -49,5 +53,5 @@ async function makeData() {
     console.log(err);
   }
 }
-makeData();
+makeData(true);
 

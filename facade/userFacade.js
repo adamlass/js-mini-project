@@ -19,6 +19,10 @@ class UserFacade {
         return (await User.find({userName: username}))[0]
     }
 
+    async removeUser(id){
+        return await User.remove({_id: id})
+    }
+
 }
 
 module.exports = new UserFacade()

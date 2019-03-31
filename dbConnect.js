@@ -1,10 +1,10 @@
 var mongoose = require('mongoose');
 
-function connect(connectionString) {
-  return mongoose.connect(connectionString, { useNewUrlParser: true });
+async function connect(connectionString) {
+  return await mongoose.connect(connectionString, { useNewUrlParser: true });
 }
 mongoose.connection.on('connected', function () {
- console.log('Mongoose default connection open ' );
+ console.log('Mongoose default connection open ');
 });
 mongoose.connection.on('disconnected', function () {
  console.log('Mongoose connection closed ' );

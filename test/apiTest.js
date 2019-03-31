@@ -1,13 +1,17 @@
 const assert = require("assert")
 const blogFacade = require("../facade/blogFacade")
 const { makeOptions, handleHttpErrors } = require("../utils/FacadeUtils")
-const LocationBlog = require("../models/LocationBlog")
 const fetch = require("node-fetch")
+
+const LocationBlog = require("../models/LocationBlog")
 const User = require("../models/User")
+const Position = require("../models/Position")
 
 const port = 3002
-const url = `http://localhost:${port}/api/blogs/`
-const url_users = `http://localhost:${port}/api/users/`
+const url = `http://localhost:${port}`
+const url_blogs = `${url}/api/blogs/`
+const url_users = `${url}/api/users/`
+const url_login = `${url}/api/login/`
 
 //connection to TEST_DB_URI
 const connect = require("../dbConnect")
@@ -24,6 +28,7 @@ app.listen(3002)
 
 describe("API test", function () {
     var testUser1
+    var testUser2
     var testBlog1
 
     beforeEach(async function () {
@@ -37,6 +42,16 @@ describe("API test", function () {
             })
         await testUser1.save()
 
+        testUser2 = new User(
+            {
+                firstName: "Jens",
+                lastName: "Jense",
+                userName: "jens",
+                password: "1234",
+                email: "jens@",
+            })
+        await testUser2.save()
+
         testBlog1 = new LocationBlog({
             info: "Very Nice blog i wrote here",
             pos: { longitude: 22, latitude: 23 },
@@ -48,6 +63,7 @@ describe("API test", function () {
     afterEach(async function () {
         await User.deleteMany({})
         await LocationBlog.deleteMany({})
+        await Position.deleteMany({})
     })
 
     describe("LocationBlog", function () {
@@ -62,7 +78,7 @@ describe("API test", function () {
                 author: "jenn"
             }
 
-            let res = await fetch(url, makeOptions("POST", blog))
+            let res = await fetch(url_blogs, makeOptions("POST", blog))
 
             let json = await handleHttpErrors(res)
 
@@ -71,7 +87,7 @@ describe("API test", function () {
         })
 
         it("should add a like to the post", async function () {
-            let res = await fetch(`${url}like/${testBlog1._id}/${testUser1.userName}`,
+            let res = await fetch(`${url_blogs}like/${testBlog1._id}/${testUser1.userName}`,
                 makeOptions("PUT"))
 
             let blog = await handleHttpErrors(res)
@@ -82,11 +98,11 @@ describe("API test", function () {
     })
 
     describe("UserFacade", function () {
-        it("should contain one and specific user", async function () {
+        it("should contain two and one specific user", async function () {
             let res = await fetch(url_users)
             let users = await handleHttpErrors(res)
 
-            assert.equal(users.length, 1)
+            assert.equal(users.length, 2)
             assert.equal(users[0]._id, testUser1._id)
         })
 
@@ -121,6 +137,58 @@ describe("API test", function () {
             let res_user = await handleHttpErrors(res)
 
             assert.equal(job.type, res_user.job[0].type)
+        })
+
+    })
+
+    describe("Login", function () {
+        beforeEach(async function () {
+            const body = {
+                userName: "jenn",
+                password: "1234",
+                latitude: 31,
+                longitude: 51,
+                distance: 3000000
+            }
+            await fetch(`${url_login}`, makeOptions("post", body))
+        })
+
+        it("should log in the user with status code 200", async function () {
+            const body = {
+                userName: "jens",
+                password: "1234",
+                latitude: 32,
+                longitude: 53,
+                distance: 3000000
+            }
+            let res = await fetch(`${url_login}`, makeOptions("post", body))
+            assert.equal(res.status, 200)
+        })
+
+        it("should have one and only one friend nearby", async function () {        
+            const body = {
+                userName: "jens",
+                password: "1234",
+                latitude: 32,
+                longitude: 53,
+                distance: 3000000
+            }
+            let res = await fetch(`${url_login}`, makeOptions("post", body))
+            let content = await res.json()
+            assert.equal(content.friends.length, 1)
+        })
+
+        it("should not be nearby friend",async function(){
+            const body = {
+                userName: "jens",
+                password: "1234",
+                latitude: 32,
+                longitude: 53,
+                distance: 2
+            }
+            let res = await fetch(`${url_login}`, makeOptions("post", body))
+            let content = await res.json()
+            assert.equal(content.friends.length, 0)
         })
     })
 
