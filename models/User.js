@@ -15,7 +15,7 @@ var UserSchema = new Schema({
     email: { type: String, required: true },
     job: [JobSchema],
     created: { type: Date, default: Date.now },
-    lastUpdated: Date,
+    lastUpdated: Date
 
 })
 
