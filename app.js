@@ -4,6 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+// graphql
+const graphqlHTTP = require("express-graphql")
+const {schema} = require("./graphql/schema")
+
 var connect = require("./dbConnect");
 connect(require("./settings").DEV_DB_URI);
 
@@ -27,6 +31,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api', apiRouter);
+
+app.use("/graphql", graphqlHTTP({
+  schema,
+  graphiql: true,
+}))
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

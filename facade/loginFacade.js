@@ -4,6 +4,7 @@ const { findNearFriends } = require("../utils/GeoUtils")
 
 class LoginFacade {
     async login(userName, password, longitude, latitude, distance, pushToken) {
+        console.log(password)
         const found = await User.findOne({
             userName,
             password
