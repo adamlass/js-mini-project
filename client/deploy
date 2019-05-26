@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
+## settings
 page='apollo'
 site='https://adamlass.com/'
 ip=adamlass.com
-
+# switch to true the first time
 edit='false'
 ins="false"
 
