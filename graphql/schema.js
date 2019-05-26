@@ -2,7 +2,6 @@ const resolvers = require("./resolvers")
 const { makeExecutableSchema } = require("graphql-tools")
 
 const typeDefs = `
-
     scalar DateTime
 
     type JobSchema {
