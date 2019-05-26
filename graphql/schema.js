@@ -1,6 +1,5 @@
 const resolvers = require("./resolvers")
 const { makeExecutableSchema } = require("graphql-tools")
-const OKGGraphQLScalars = require("@okgrow/graphql-scalars")
 
 const typeDefs = `
 
@@ -83,4 +82,4 @@ const typeDefs = `
 `
 const schema = makeExecutableSchema({ typeDefs, resolvers })
 
-module.exports = { schema }
+module.exports = { schema, typeDefs, resolvers }

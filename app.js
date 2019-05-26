@@ -1,22 +1,28 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+
+var app = express();
 
 // graphql
 const graphqlHTTP = require("express-graphql")
-const {schema} = require("./graphql/schema")
+const { schema, typeDefs, resolvers } = require("./graphql/schema")
 
-var connect = require("./dbConnect");
+// apollo server
+const { ApolloServer } = require('apollo-server-express')
+const server = new ApolloServer({ typeDefs, resolvers })
+const apolloPath = "/apollo"
+server.applyMiddleware({app, path: apolloPath})
+
+const connect = require("./dbConnect");
 connect(require("./settings").DEV_DB_URI);
 
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const apiRouter = require('./routes/api');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var apiRouter = require('./routes/api');
-
-var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
