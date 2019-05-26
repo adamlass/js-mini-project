@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+page='apollo'
+site='https://adamlass.com/'
+ip=adamlass.com
+
+edit='false'
+ins="false"
+
+while getopts 'e i' flag; do
+  case "${flag}" in
+    e) edit='true' ;;
+    i) ins="true" ;;
+  esac
+done
+
+if [ $ins == "true" ] 
+then
+    echo installing dep 
+    npm install
+fi
+
+echo "Edit in package.json homepage"
+json -I -f package.json -e "this.homepage=\"$site$page\"" &&
+echo Creating build folder
+npm run build &&
+echo Removing old folder and creating new one
+ssh root@$ip "rm -rf /var/www/$page/; mkdir /var/www/$page" &&
+echo Sending build folder content to server &&
+scp -r ./build/* root@$ip:/var/www/$page 
+
+if [ $edit == "true" ]
+then
+	echo Edit remote default file
+	ssh root@$ip "sed -i 's/#sh/location \/$page \{\n \t\t root \/var\/www\/\;\n \t \}\n\n \t #sh/' /etc/nginx/sites-available/default"
+	ssh root@$ip "service nginx restart"
+fi
