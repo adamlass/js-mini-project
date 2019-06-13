@@ -5,7 +5,7 @@ import { Table, Card, Form, Button } from "react-bootstrap"
 
 const ADD_USER = gql`
   mutation AddUser(
-        $firstName: String!,
+        $firstName: Int!,
         $lastName: String!,
         $userName: String!,
         $password: String!,
@@ -32,18 +32,18 @@ const ADD_USER = gql`
 
 
 export default class AddUser extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props)
-        this.state = {input: {firstName: "", lastName: "", userName: "", password: "", email: "" }}
+        this.state = { input: { firstName: "", lastName: "", userName: "", password: "", email: "" } }
     }
 
     handleKeyPressed = (e) => {
         let input = Object.assign({}, this.state.input)
         input[e.target.name] = e.target.value
-        this.setState({input})
+        this.setState({ input })
     }
 
-    render(){
+    render() {
         const GET_USERS = this.props.GET_USERS
 
         var input = this.state.input
@@ -76,7 +76,7 @@ export default class AddUser extends React.Component {
 
                             }
                         })
-                        this.setState({input: { firstName: "", lastName: "", userName: "", password: "", email: "" }})
+                        this.setState({ input: { firstName: "", lastName: "", userName: "", password: "", email: "" } })
                     }
                     }
                     >

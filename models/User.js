@@ -19,6 +19,7 @@ var UserSchema = new Schema({
 
 })
 
+UserSchema.index({email: 1})
 
 UserSchema.pre("insertMany", function (next) {
     this.password = "Hash Please and add some salt" + this.password

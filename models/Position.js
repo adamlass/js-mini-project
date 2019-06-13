@@ -4,7 +4,6 @@ const SECONDS = 1;
 var EXPIRES = 60 * 60 * SECONDS;
 
 var PositionSchema = new Schema({
-    //Make sure that next line reflects your User-model
     user: { type: Schema.ObjectId, ref: 'User', required: true },
     created: { type: Date, expires: EXPIRES, default: Date.now },
     loc: {

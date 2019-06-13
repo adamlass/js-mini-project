@@ -77,9 +77,6 @@ describe("UserFacade", function () {
             assert.ok(user.equals(testUser1))
         })
     })
-
-
-
 })
 
 

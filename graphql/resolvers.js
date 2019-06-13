@@ -26,8 +26,13 @@ module.exports = {
             return "Successfully deleted user"
         },
         addUser(root, { input }) {
-            const { firstName, lastName, userName, password, email } = input
-            return userFacade.addUser(firstName, lastName, userName, password, email)
+            try{
+                const { firstName, lastName, userName, password, email } = input
+                return userFacade.addUser(firstName, lastName, userName, password, email)
+            }catch (err){
+                return "Error"
+            }
+            
         },
         async likeLocationBlog(root, { input }) {
             var { blogID, userName } = input

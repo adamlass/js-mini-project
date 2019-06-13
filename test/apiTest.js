@@ -2,12 +2,16 @@ const assert = require("assert")
 const blogFacade = require("../facade/blogFacade")
 const { makeOptions, handleHttpErrors } = require("../utils/FacadeUtils")
 const fetch = require("node-fetch")
+var express = require('express');
 
 const LocationBlog = require("../models/LocationBlog")
 const User = require("../models/User")
 const Position = require("../models/Position")
 
-const port = 3002
+var apiRouter = require('../routes/api');
+
+
+const port = 3003
 const url = `http://localhost:${port}`
 const url_blogs = `${url}/api/blogs/`
 const url_users = `${url}/api/users/`
@@ -17,19 +21,18 @@ const url_login = `${url}/api/login/`
 const connect = require("../dbConnect")
 connect(require("../settings").TEST_DB_URI);
 
-//making server
-var express = require('express');
-var apiRouter = require('../routes/api');
-var app = express();
-app.use(express.json());
-app.use('/api', apiRouter);
-app.listen(3002)
-
-
 describe("API test", function () {
     var testUser1
     var testUser2
     var testBlog1
+
+    before(function () {
+        //making server
+        var app = express();
+        app.use(express.json());
+        app.use('/api', apiRouter);
+        app.listen(port)
+    })
 
     beforeEach(async function () {
         testUser1 = new User(
@@ -165,7 +168,7 @@ describe("API test", function () {
             assert.equal(res.status, 200)
         })
 
-        it("should have one and only one friend nearby", async function () {        
+        it("should have one and only one friend nearby", async function () {
             const body = {
                 userName: "jens",
                 password: "1234",
@@ -178,7 +181,7 @@ describe("API test", function () {
             assert.equal(content.friends.length, 1)
         })
 
-        it("should not be nearby friend",async function(){
+        it("should not be nearby friend", async function () {
             const body = {
                 userName: "jens",
                 password: "1234",

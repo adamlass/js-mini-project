@@ -17,7 +17,7 @@ class LoginFacade {
         const query = {
             user: found._id
         }
-        console.log("pushtoken:", typeof pushToken)
+        
         const newLoc = {
             loc: {
                 type: "Point",

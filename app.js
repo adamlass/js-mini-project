@@ -4,31 +4,27 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require("cors")
+const graphqlHTTP = require("express-graphql")
+const { ApolloServer } = require('apollo-server-express')
 
 var app = express();
 
 // graphql
-const graphqlHTTP = require("express-graphql")
 const { schema, typeDefs, resolvers } = require("./graphql/schema")
-
-// apollo server
-const { ApolloServer } = require('apollo-server-express')
-const server = new ApolloServer({ typeDefs, resolvers })
-const apolloPath = "/apollo"
-server.applyMiddleware({app, path: apolloPath})
 
 //mongoose connection
 const connect = require("./dbConnect");
 connect(require("./settings").DEV_DB_URI);
 
+//router imports
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 const apiRouter = require('./routes/api');
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+//Middlewares
 
 app.use(cors())
 app.use(logger('dev'));
@@ -38,9 +34,14 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/api', apiRouter);
 
+// apollo server
+const server = new ApolloServer({ typeDefs, resolvers })
+const apolloPath = "/apollo"
+server.applyMiddleware({app, path: apolloPath})
+
+//graphql
 app.use("/graphql", graphqlHTTP({
   schema,
   graphiql: true,
